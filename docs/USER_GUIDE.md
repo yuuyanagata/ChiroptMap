@@ -115,9 +115,12 @@ Both direct commands default to `--min-abs-coeff 1e-4`.
   printing precision.
 - The settings file records retained configuration counts and norms.
 
-For Gaussian, `--strict-ci` requires `IOp(9/40=4)` or a stricter integer setting
-and checks the closed-shell diagnostic `2*sum(c^2) >= 0.98`. This is a practical
-completeness check, not a proof of cutoff convergence.
+For Gaussian, `--strict-ci` requires `IOp(9/40=4)` or another validated
+sufficient setting and checks the closed-shell diagnostic
+`2*sum(c^2) >= 0.98`. This is a practical warning, not proof of cube
+convergence. In the molecule1 scan, n=3 already gave `2*sum(c^2)=0.99760` but
+still differed from n=4 by 29% (TEDM) and 41% (TMDM) in relative L2. The n=5
+output was exactly the same as n=4 and did not add `1e-5` amplitudes.
 
 ## 6. CPL CSV without maps
 

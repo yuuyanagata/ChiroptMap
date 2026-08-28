@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added the molecule1 `IOp(9/40=1-5)` direct-WFX convergence study.
+- Clarified that n=5 was identical to n=4 in the validated Gaussian 16 case.
+
 ## 0.1.0 - 2026-08-29
 
 - Initial ChiroptMap release under the MIT License.

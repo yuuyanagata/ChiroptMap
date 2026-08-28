@@ -158,6 +158,11 @@ Therefore these settings are equivalent for the retained TDA amplitude set,
 not identical program instructions. A cutoff-convergence test is recommended
 for unusually diffuse or strongly multiconfigurational states.
 
+An explicit molecule1 scan over `IOp(9/40=1,2,3,4,5)` found 2, 16, 654,
+9556, and 9556 printed S1 amplitudes, respectively. The n=4 and n=5 amplitude
+sets and direct cubes were identical; n=5 did not extend the output to `1e-5`.
+See [docs/IOP_9_40_CONVERGENCE.md](docs/IOP_9_40_CONVERGENCE.md).
+
 ## CPL CSV and `g_CPL`
 
 Every direct map command writes `<output-stem>-CPL.csv` unless
@@ -212,6 +217,7 @@ interpretation.
 - [English user guide](docs/USER_GUIDE.md)
 - [ORCA conventions and input requirements](docs/ORCA_CPL.md)
 - [Validation results](docs/VALIDATION.md)
+- [Gaussian IOp(9/40) convergence](docs/IOP_9_40_CONVERGENCE.md)
 - [Density modes](docs/VALIDATION_AND_CONTRIBUTION_MAP_MODES.md)
 - [Implementation notes](docs/IMPLEMENTATION_NOTES.md)
 

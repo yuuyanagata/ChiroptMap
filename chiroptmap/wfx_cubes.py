@@ -132,7 +132,8 @@ def generate_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
     ):
         raise ValueError(
             "The printed excitation coefficients failed the strict completeness check. "
-            "Repeat Gaussian with IOp(9/40=4) or stricter."
+            "Repeat Gaussian with IOp(9/40=4). In the validated molecule1 scan, "
+            "IOp(9/40=5) printed exactly the same amplitudes as n=4."
         )
 
     if args.min_abs_coeff < 0.0:

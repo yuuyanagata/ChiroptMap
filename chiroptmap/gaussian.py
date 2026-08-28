@@ -111,7 +111,7 @@ def diagnose_coefficients(log_text: str, state: int, excitations: Sequence[Excit
     messages: List[str] = []
     if not has_recommended_iop:
         messages.append(
-            "Gaussian route section does not contain IOp(9/40=4) or a stricter equivalent; "
+            "Gaussian route section does not contain IOp(9/40=4) or a validated sufficient setting; "
             "the printed TD-DFT configurations may be threshold-truncated."
         )
     if two_sum_c_squared < 0.98:
