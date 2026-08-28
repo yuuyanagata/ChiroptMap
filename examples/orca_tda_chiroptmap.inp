@@ -1,0 +1,23 @@
+! B3LYP/G 6-311G(2d,p) D3BJ TightSCF AIM
+
+%pal
+  nprocs 16
+end
+
+%maxcore 4000
+
+%tddft
+  NRoots 6
+  TDA true
+  TPrint 1e-8
+  DoNTO false
+end
+
+%output
+  JSONGBWFile true
+end
+
+* xyz 0 1
+H  0.000000  0.000000  0.000000
+H  0.000000  0.000000  0.740000
+*

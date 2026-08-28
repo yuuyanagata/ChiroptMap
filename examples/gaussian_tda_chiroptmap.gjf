@@ -1,0 +1,9 @@
+%nprocshared=16
+%mem=32GB
+#p B3LYP/6-311G(2d,p) EmpiricalDispersion=GD3BJ TDA=(Singlets,NStates=6) IOp(9/40=4)
+
+ChiroptMap Gaussian TDA template
+
+0 1
+H  0.000000  0.000000  0.000000
+H  0.000000  0.000000  0.740000

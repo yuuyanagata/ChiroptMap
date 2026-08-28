@@ -1,0 +1,11 @@
+%nprocshared=16
+%mem=32GB
+#p B3LYP/6-311G(2d,p) EmpiricalDispersion=GD3BJ Output=WFX IOp(99/18=-1)
+
+ChiroptMap matching canonical all-MO WFX template
+
+0 1
+H  0.000000  0.000000  0.000000
+H  0.000000  0.000000  0.740000
+
+canonical_allmo.wfx
