@@ -2,9 +2,16 @@
 
 ## Unreleased
 
+## 0.2.0 - 2026-08-29
+
 - Standardized direct Gaussian/ORCA output filenames, cube headers, validation
   labels, CLI help, runtime messages, tests, and documentation on EDTM/MDTM.
 - Removed the former alternative word-order Gaussian direct-WFX CLI spellings.
+- Recorded the cube-grid origin, magnetic-operator origin, and Cartesian frame
+  in direct-workflow settings files.
+- Added `NoSymm` to the Gaussian example inputs and documented the common-frame
+  requirement for cross-engine MDTM comparisons.
+- Added a GitHub Actions status badge to the README.
 
 ## 0.1.1 - 2026-08-29
 

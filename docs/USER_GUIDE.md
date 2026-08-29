@@ -70,12 +70,23 @@ the final output containing the transition electric and magnetic dipole tables.
 
 ### 4.2 Canonical all-MO WFX
 
-At the exact same geometry, method, basis, charge, multiplicity, and orientation,
-run a separate SCF job with:
+At the exact same geometry, method, basis, charge, multiplicity, orientation,
+and Cartesian origin, run a separate SCF job with:
 
 ```text
-Output=WFX IOp(99/18=-1)
+Output=WFX IOp(99/18=-1) NoSymm
 ```
+
+Use `NoSymm` in the matching excited-state input as well when preparing a new
+cross-engine comparison. For the archived validation data, ORCA inputs were
+generated directly from the Gaussian WFX nuclear coordinates, and ChiroptMap
+checked atom order and Cartesian coordinates within `2e-5` Bohr when applying
+the common reference cube.
+
+MDTM evaluation references the magnetic angular-momentum operator to
+`(0, 0, 0)` of this shared wavefunction frame. The cube-grid origin is the
+lower sampling corner and is not a magnetic or gauge origin. Both values are
+written to the direct-workflow settings file.
 
 Write the WFX filename after the molecular specification as required by the
 Gaussian input format. ChiroptMap rejects fractional occupations and common

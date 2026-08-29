@@ -231,6 +231,7 @@ def generate_orca_json_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
                     f"component={component}; threshold={args.min_abs_coeff:g}",
                 )
 
+    grid_origin = ",".join(f"{float(value):.16g}" for value in cube.origin_bohr)
     settings_path = args.outdir / f"{prefix}_settings.txt"
     settings_path.write_text(
         "\n".join(
@@ -243,8 +244,11 @@ def generate_orca_json_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
                 f"retained_pairs={pair_count}",
                 f"retained_sum_x2={retained_norm}",
                 f"grid={cube.nx},{cube.ny},{cube.nz}",
+                f"grid_origin_bohr={grid_origin}",
                 f"grid_steps_bohr={dx},{dy},{dz}",
                 f"grid_source={grid_source}",
+                "magnetic_operator_origin_bohr=0,0,0",
+                "coordinate_frame=wavefunction_cartesian_coordinates",
                 f"occupied_reconstruction_max_error={bridge.diagnostics.maximum_occupied_reconstruction_error}",
                 "electric_factor=-sqrt(2)",
                 "magnetic_factor=-1/sqrt(2)",

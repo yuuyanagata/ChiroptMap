@@ -5,7 +5,7 @@ from chiroptmap.densities import excitation_weights
 
 
 def test_version_is_public_semver():
-    assert chiroptmap.__version__ == "0.1.1"
+    assert chiroptmap.__version__ == "0.2.0"
 
 
 def test_contribution_map_weighting():

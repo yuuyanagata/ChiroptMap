@@ -189,6 +189,9 @@ def test_cli_generates_edtm_and_mdtm_cubes_without_mo_cubes(tmp_path):
     )
     assert "validation_edtm_factor=-2.0" in settings
     assert "validation_mdtm_factor=-1.0" in settings
+    assert "grid_origin_bohr=-1,-1,-1" in settings
+    assert "magnetic_operator_origin_bohr=0,0,0" in settings
+    assert "coordinate_frame=wavefunction_cartesian_coordinates" in settings
 
     comparison_outdir = tmp_path / "reference_grid_cubes"
     main(

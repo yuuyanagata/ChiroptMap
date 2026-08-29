@@ -209,3 +209,8 @@ def test_orca_json_wfx_bridge_recovers_shell_local_transforms(tmp_path):
     ) as handle:
         quantities = {row["quantity"] for row in csv.DictReader(handle)}
     assert quantities == {"EDTM", "MDTM"}
+
+    settings = (outdir / "wavefunction_S1_settings.txt").read_text(encoding="utf-8")
+    assert "grid_origin_bohr=-1,-1,-1" in settings
+    assert "magnetic_operator_origin_bohr=0,0,0" in settings
+    assert "coordinate_frame=wavefunction_cartesian_coordinates" in settings

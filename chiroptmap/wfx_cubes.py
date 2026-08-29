@@ -331,6 +331,7 @@ def generate_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
                     f"component={component}; mode={args.density_mode}",
                 )
 
+    grid_origin = ",".join(f"{float(value):.16g}" for value in cube.origin_bohr)
     settings_path = args.outdir / f"{prefix}_settings.txt"
     settings_path.write_text(
         "\n".join(
@@ -343,8 +344,11 @@ def generate_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
                 f"spacing_bohr={args.spacing}",
                 f"padding_bohr={args.padding}",
                 f"grid={cube.nx},{cube.ny},{cube.nz}",
+                f"grid_origin_bohr={grid_origin}",
                 f"grid_steps_bohr={dx},{dy},{dz}",
                 f"grid_source={grid_source}",
+                "magnetic_operator_origin_bohr=0,0,0",
+                "coordinate_frame=wavefunction_cartesian_coordinates",
                 f"min_abs_coeff={args.min_abs_coeff}",
                 f"retained_pairs={len(pairs)}",
                 f"retained_forward={len(forward)}",

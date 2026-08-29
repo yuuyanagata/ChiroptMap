@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use ChiroptMap, please cite the accompanying manuscript or this repository."
 title: "ChiroptMap: Gaussian and ORCA transition-moment-density mapping for chiroptical analysis"
-version: "0.1.1"
+version: "0.2.0"
 license: "MIT"
 authors:
   - family-names: "Nagata"

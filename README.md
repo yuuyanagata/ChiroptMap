@@ -1,5 +1,7 @@
 # ChiroptMap
 
+[![Tests](https://github.com/yuuyanagata/ChiroptMap/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/yuuyanagata/ChiroptMap/actions/workflows/tests.yml?query=branch%3Amain)
+
 ChiroptMap is an open-source Python toolkit for chiroptical excited-state
 analysis. It generates real-space electric-dipole transition-moment (EDTM) and
 magnetic-dipole transition-moment (MDTM) cube files from Gaussian or ORCA
@@ -46,6 +48,20 @@ consistently.
 
 Open-shell ORCA, ORCA full TD-DFT X/Y reconstruction, and triplet maps are not
 yet supported by the direct ORCA command.
+
+## Coordinate frame and magnetic origin
+
+MDTM evaluation uses the absolute Cartesian coordinates in the wavefunction
+frame, with the magnetic angular-momentum operator referenced to `(0, 0, 0)`
+of that frame. The lower corner of a cube is only the sampling-grid origin; it
+does not redefine the magnetic-operator origin. Direct-workflow settings files
+record both origins explicitly.
+
+For cross-engine comparisons, preserve atom order, coordinates, orientation,
+and origin. The supplied Gaussian templates use `NoSymm`, and an ORCA input can
+be built from the matching Gaussian WFX coordinates. With `--reference-cube`,
+ChiroptMap applies the same grid and rejects atom-list or coordinate mismatches
+larger than `2e-5` Bohr.
 
 ## Installation
 
@@ -133,8 +149,14 @@ Create a separate matching ground-state WFX at the same geometry, method,
 basis, and orientation. It must contain canonical virtual orbitals:
 
 ```text
-#p B3LYP/6-311G(2d,p) Output=WFX IOp(99/18=-1)
+#p B3LYP/6-311G(2d,p) Output=WFX IOp(99/18=-1) NoSymm
 ```
+
+Use `NoSymm` in the matching excited-state input as well. This preserves the
+input Cartesian frame for newly prepared Gaussian/ORCA comparisons; archived
+validation calculations instead enforced the common frame by transferring the
+Gaussian WFX coordinates directly to ORCA and checking the coordinates before
+map generation.
 
 Do not use the WFX written at the end of a TD/TDA job: it can contain post-SCF
 natural orbitals rather than the canonical orbitals referenced by printed

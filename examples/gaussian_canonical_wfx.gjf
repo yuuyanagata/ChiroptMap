@@ -1,6 +1,6 @@
 %nprocshared=16
 %mem=32GB
-#p B3LYP/6-311G(2d,p) EmpiricalDispersion=GD3BJ Output=WFX IOp(99/18=-1)
+#p B3LYP/6-311G(2d,p) EmpiricalDispersion=GD3BJ Output=WFX IOp(99/18=-1) NoSymm
 
 ChiroptMap matching canonical all-MO WFX template
 
