@@ -1,8 +1,8 @@
 # ChiroptMap
 
 ChiroptMap is an open-source Python toolkit for chiroptical excited-state
-analysis. It generates real-space transition electric dipole moment (TEDM) and
-transition magnetic dipole moment (TMDM) cube files from Gaussian or ORCA
+analysis. It generates real-space electric-dipole transition-moment (EDTM) and
+magnetic-dipole transition-moment (MDTM) cube files from Gaussian or ORCA
 calculations and exports state-resolved circularly polarized luminescence (CPL)
 summary tables, including the dissymmetry factor `g_CPL`.
 
@@ -11,24 +11,25 @@ intermediate molecular-orbital cube files.
 
 ## Terminology
 
-The manuscript and the command-line interface use different word orders for
-the same two scalar transition-moment-density maps:
+ChiroptMap consistently uses the following names for its two scalar
+transition-moment-density maps:
 
-| Quantity | Manuscript label | CLI/output label | Relationship |
-|---|---|---|---|
-| Electric-dipole transition-moment density | EDTM | TEDM | Identical map and units |
-| Magnetic-dipole transition-moment density | MDTM | TMDM | Identical map and units |
+| Quantity | Label |
+|---|---|
+| Electric-dipole transition-moment density | EDTM |
+| Magnetic-dipole transition-moment density | MDTM |
 
-Thus, for example, an `*_TEDM_total.cube` file contains the EDTM map discussed
-in the manuscript; the label difference does not indicate a different
-calculation.
+Direct-workflow releases through v0.1.1 used alternative word-order labels in
+their interface and output files. Current commands, output files, runtime
+messages, validation tables, and documentation use `EDTM` and `MDTM`
+consistently.
 
 ## Highlights
 
 - Gaussian TD-DFT/TDA output plus a canonical all-MO WFX file.
 - ORCA 6.1 closed-shell TDA output plus JSON and occupied-MO WFX files.
 - Direct analytical evaluation of atomic-orbital primitives and gradients.
-- TEDM and TMDM total/component cube files.
+- EDTM and MDTM total/component cube files.
 - Automatic state-resolved CPL CSV export for both Gaussian and ORCA.
 - A default excitation-amplitude cutoff of `1e-4`.
 - Optional legacy Gaussian checkpoint/MO-cube workflow retained for comparison.
@@ -36,7 +37,7 @@ calculation.
 
 ## Supported workflows
 
-| Program | Excited-state model | Required files | TEDM/TMDM cubes | CPL CSV |
+| Program | Excited-state model | Required files | EDTM/MDTM cubes | CPL CSV |
 |---|---|---|---:|---:|
 | Gaussian | closed-shell TDA | TD/TDA output + canonical all-MO WFX | yes | yes |
 | Gaussian | closed-shell TD-DFT | output with X/Y amplitudes + canonical all-MO WFX | yes | yes |
@@ -67,8 +68,8 @@ The installed commands are:
 
 ```text
 chiroptmap                 CPL CSV and legacy Gaussian MO-cube workflow
-chiroptmap-gaussian-wfx    Direct Gaussian/WFX TEDM and TMDM cubes
-chiroptmap-orca            Direct ORCA JSON/WFX TEDM and TMDM cubes
+chiroptmap-gaussian-wfx    Direct Gaussian/WFX EDTM and MDTM cubes
+chiroptmap-orca            Direct ORCA JSON/WFX EDTM and MDTM cubes
 ```
 
 ## Quick start: ORCA
@@ -148,7 +149,7 @@ chiroptmap-gaussian-wfx \
   --state 1 \
   --density-mode validation \
   --min-abs-coeff 1e-4 \
-  --phase-align tedm \
+  --phase-align edtm \
   --strict-ci \
   --outdir results/gaussian_S1 \
   --keep-components
@@ -199,17 +200,17 @@ energy, wavelength, oscillator strength, and a radiative-rate estimate.
 ## Principal outputs
 
 ```text
-*_TEDM_total.cube
-*_TMDM_total.cube
-*_TEDM_[xyz].cube                  with --keep-components
-*_TMDM_[xyz].cube                  with --keep-components
+*_EDTM_total.cube
+*_MDTM_total.cube
+*_EDTM_[xyz].cube                  with --keep-components
+*_MDTM_[xyz].cube                  with --keep-components
 *_moment_validation.csv
 *-CPL.csv                          includes g value
 *_settings.txt
 ```
 
-The older Gaussian MO-cube command retains historical `EDTM`/`MDTM` filenames;
-in ChiroptMap documentation these quantities are called TEDM/TMDM.
+The older Gaussian MO-cube command and both direct commands now use the same
+`EDTM`/`MDTM` filename convention.
 
 ## Validation
 
@@ -217,10 +218,10 @@ Five molecules were calculated independently with Gaussian and ORCA at
 B3LYP/6-311G(2d,p)-D3BJ/TDA using identical geometries and grids. For the S1
 maps, ORCA direct evaluation versus Gaussian direct WFX evaluation gave:
 
-- TEDM cosine similarity: 0.999895 to 0.999978.
-- TEDM relative L2 error: 0.677% to 1.466% (mean 1.061%).
-- TMDM cosine similarity: 0.999753 to 0.999906.
-- TMDM relative L2 error: 1.431% to 2.314% (mean 1.774%).
+- EDTM cosine similarity: 0.999895 to 0.999978.
+- EDTM relative L2 error: 0.677% to 1.466% (mean 1.061%).
+- MDTM cosine similarity: 0.999753 to 0.999906.
+- MDTM relative L2 error: 1.431% to 2.314% (mean 1.774%).
 - Maximum S1 energy difference: 0.000277 eV.
 
 See [docs/VALIDATION.md](docs/VALIDATION.md) for the full table and

@@ -4,7 +4,7 @@
 
 The direct ORCA implementation is validated for ORCA 6.1.1, restricted
 closed-shell singlet TDA calculations. It exports both state-resolved CPL
-summary CSV files and S1/Sn TEDM/TMDM cube files.
+summary CSV files and S1/Sn EDTM/MDTM cube files.
 
 ## Recommended ORCA input
 
@@ -88,11 +88,11 @@ For a restricted closed-shell TDA root with ORCA amplitudes `Xia`, ChiroptMap
 uses
 
 ```text
-TEDM weight = -sqrt(2) * Xia
-TMDM weight = -Xia / sqrt(2)
+EDTM weight = -sqrt(2) * Xia
+MDTM weight = -Xia / sqrt(2)
 ```
 
-and evaluates both quantities directly from AO primitives. TMDM uses analytical
+and evaluates both quantities directly from AO primitives. MDTM uses analytical
 orbital gradients; no finite-difference MO cubes are involved.
 
 ## Amplitude cutoff
@@ -142,5 +142,6 @@ not mixed with length-gauge data.
   explicit errors but are not automatically translated.
 - Full TD-DFT X/Y, unrestricted references, triplets, ECP-heavy cases, and
   specialized general-contraction cases require additional validation.
-- A state with zero printed TEDM or TMDM norm cannot define a projected total
-  map, although component densities remain mathematically meaningful.
+- A state with zero norm for the printed electric or magnetic transition-moment
+  vector cannot define a projected total map, although component densities
+  remain mathematically meaningful.

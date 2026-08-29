@@ -1,4 +1,4 @@
-"""Direct TEDM/TMDM cube generation from Gaussian output and canonical WFX."""
+"""Direct EDTM/MDTM cube generation from Gaussian output and canonical WFX."""
 
 from __future__ import annotations
 
@@ -47,13 +47,13 @@ def _weight_matrices(
     dtype: np.dtype,
     density_mode: str,
     response_convention: str,
-    validation_tedm_factor: float,
-    validation_tmdm_factor: float,
+    validation_edtm_factor: float,
+    validation_mdtm_factor: float,
 ) -> Tuple[np.ndarray, np.ndarray]:
     occupied_index = {mo: i for i, mo in enumerate(occupied_mos)}
     virtual_index = {mo: i for i, mo in enumerate(virtual_mos)}
-    tedm = np.zeros((len(occupied_mos), len(virtual_mos)), dtype=dtype)
-    tmdm = np.zeros_like(tedm)
+    edtm = np.zeros((len(occupied_mos), len(virtual_mos)), dtype=dtype)
+    mdtm = np.zeros_like(edtm)
     for pair in pairs:
         x_amplitude = forward.get(pair, 0.0)
         y_amplitude = reverse.get(pair, 0.0)
@@ -68,18 +68,18 @@ def _weight_matrices(
         electric_weight, _ = excitation_weights(
             electric_amplitude,
             density_mode,
-            validation_edtm_factor=validation_tedm_factor,
-            validation_mdtm_factor=validation_tmdm_factor,
+            validation_edtm_factor=validation_edtm_factor,
+            validation_mdtm_factor=validation_mdtm_factor,
         )
         _, magnetic_weight = excitation_weights(
             magnetic_amplitude,
             density_mode,
-            validation_edtm_factor=validation_tedm_factor,
-            validation_mdtm_factor=validation_tmdm_factor,
+            validation_edtm_factor=validation_edtm_factor,
+            validation_mdtm_factor=validation_mdtm_factor,
         )
-        tedm[occupied_index[pair[0]], virtual_index[pair[1]]] += electric_weight
-        tmdm[occupied_index[pair[0]], virtual_index[pair[1]]] += magnetic_weight
-    return tedm, tmdm
+        edtm[occupied_index[pair[0]], virtual_index[pair[1]]] += electric_weight
+        mdtm[occupied_index[pair[0]], virtual_index[pair[1]]] += magnetic_weight
+    return edtm, mdtm
 
 
 def _geometry_check(wfx: WFXWavefunction, log_text: str) -> None:
@@ -185,7 +185,7 @@ def generate_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
     all_index = {mo: i for i, mo in enumerate(all_mos)}
     occupied_columns = np.asarray([all_index[mo] for mo in occupied_mos], dtype=np.int64)
     virtual_columns = np.asarray([all_index[mo] for mo in virtual_mos], dtype=np.int64)
-    tedm_weights, tmdm_weights = _weight_matrices(
+    edtm_weights, mdtm_weights = _weight_matrices(
         forward,
         reverse,
         pairs,
@@ -194,12 +194,12 @@ def generate_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
         dtype,
         args.density_mode,
         args.response_convention,
-        args.validation_tedm_factor,
-        args.validation_tmdm_factor,
+        args.validation_edtm_factor,
+        args.validation_mdtm_factor,
     )
 
-    tedm_components = tuple(np.zeros(grid_shape, dtype=dtype) for _ in range(3))
-    tmdm_components = tuple(np.zeros(grid_shape, dtype=dtype) for _ in range(3))
+    edtm_components = tuple(np.zeros(grid_shape, dtype=dtype) for _ in range(3))
+    mdtm_components = tuple(np.zeros(grid_shape, dtype=dtype) for _ in range(3))
 
     eprint(
         f"[Grid] shape={grid_shape} steps=({dx:g},{dy:g},{dz:g}) bohr source={grid_source}"
@@ -235,13 +235,13 @@ def generate_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
 
         tau = np.einsum(
             "ij,ij->i",
-            phi_occ @ tedm_weights,
+            phi_occ @ edtm_weights,
             phi_virt,
             optimize=True,
         )
         block_shape = (x1 - x0, cube.ny, cube.nz)
         for component, coordinate in enumerate((points[:, 0], points[:, 1], points[:, 2])):
-            tedm_components[component][x0:x1] = (coordinate * tau).reshape(block_shape)
+            edtm_components[component][x0:x1] = (coordinate * tau).reshape(block_shape)
 
         coordinate_columns = (points[:, 0, None], points[:, 1, None], points[:, 2, None])
         a_occ = (
@@ -254,34 +254,34 @@ def generate_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
             coordinate_columns[2] * grad_virt[0] - coordinate_columns[0] * grad_virt[2],
             coordinate_columns[0] * grad_virt[1] - coordinate_columns[1] * grad_virt[0],
         )
-        phi_occ_weighted = phi_occ @ tmdm_weights
+        phi_occ_weighted = phi_occ @ mdtm_weights
         for component in range(3):
             term1 = np.einsum(
-                "ij,ij->i", a_occ[component] @ tmdm_weights, phi_virt, optimize=True
+                "ij,ij->i", a_occ[component] @ mdtm_weights, phi_virt, optimize=True
             )
             term2 = np.einsum(
                 "ij,ij->i", phi_occ_weighted, a_virt[component], optimize=True
             )
-            tmdm_components[component][x0:x1] = (term1 - term2).reshape(block_shape)
+            mdtm_components[component][x0:x1] = (term1 - term2).reshape(block_shape)
 
         eprint(f"[Grid] completed x slices {x1}/{cube.nx}")
 
-    gaussian_tedm = parse_edtm_vector(log_text, args.state)
-    gaussian_tmdm = parse_mdtm_vector(log_text, args.state)
-    tedm_norm = math.sqrt(sum(value * value for value in gaussian_tedm))
-    tmdm_norm = math.sqrt(sum(value * value for value in gaussian_tmdm))
-    if tedm_norm == 0.0 or tmdm_norm == 0.0:
-        raise ValueError("The selected state has a zero Gaussian TEDM or TMDM vector norm.")
+    gaussian_edtm = parse_edtm_vector(log_text, args.state)
+    gaussian_mdtm = parse_mdtm_vector(log_text, args.state)
+    edtm_norm = math.sqrt(sum(value * value for value in gaussian_edtm))
+    mdtm_norm = math.sqrt(sum(value * value for value in gaussian_mdtm))
+    if edtm_norm == 0.0 or mdtm_norm == 0.0:
+        raise ValueError("The selected state has a zero Gaussian EDTM or MDTM vector norm.")
 
-    if args.phase_align == "tedm":
+    if args.phase_align == "edtm":
         volume = cube_voxel_volume_bohr3(cube)
         integrated = np.asarray(
-            [float(np.sum(grid, dtype=np.float64) * volume) for grid in tedm_components]
+            [float(np.sum(grid, dtype=np.float64) * volume) for grid in edtm_components]
         )
-        if float(np.dot(integrated, np.asarray(gaussian_tedm))) < 0.0:
-            for grid in tedm_components + tmdm_components:
+        if float(np.dot(integrated, np.asarray(gaussian_edtm))) < 0.0:
+            for grid in edtm_components + mdtm_components:
                 grid *= -1.0
-            eprint("[Phase] Multiplied all component densities by -1 to align TEDM with Gaussian.")
+            eprint("[Phase] Multiplied all component densities by -1 to align EDTM with Gaussian.")
 
     prefix = args.outprefix or f"{args.log.stem}_S{args.state}_{args.density_mode.replace('-', '_')}"
     args.outdir.mkdir(parents=True, exist_ok=True)
@@ -292,36 +292,36 @@ def generate_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
         eprint(f"[CPL] {cpl_path}")
 
     if not args.skip_validation_report:
-        rows = compare_component_integrals(cube, "TEDM", tedm_components, gaussian_tedm)
-        rows += compare_component_integrals(cube, "TMDM", tmdm_components, gaussian_tmdm)
+        rows = compare_component_integrals(cube, "EDTM", edtm_components, gaussian_edtm)
+        rows += compare_component_integrals(cube, "MDTM", mdtm_components, gaussian_mdtm)
         validation_path = args.outdir / f"{prefix}_moment_validation.csv"
         write_validation_csv(validation_path, rows)
         eprint(f"[Validation] {validation_path}")
 
-    tedm_unit = np.asarray(gaussian_tedm, dtype=float) / tedm_norm
-    tmdm_unit = np.asarray(gaussian_tmdm, dtype=float) / tmdm_norm
-    tedm_total = sum(tedm_unit[index] * tedm_components[index] for index in range(3))
-    tmdm_total = sum(tmdm_unit[index] * tmdm_components[index] for index in range(3))
+    edtm_unit = np.asarray(gaussian_edtm, dtype=float) / edtm_norm
+    mdtm_unit = np.asarray(gaussian_mdtm, dtype=float) / mdtm_norm
+    edtm_total = sum(edtm_unit[index] * edtm_components[index] for index in range(3))
+    mdtm_total = sum(mdtm_unit[index] * mdtm_components[index] for index in range(3))
 
-    tedm_path = args.outdir / f"{prefix}_TEDM_total.cube"
-    tmdm_path = args.outdir / f"{prefix}_TMDM_total.cube"
+    edtm_path = args.outdir / f"{prefix}_EDTM_total.cube"
+    mdtm_path = args.outdir / f"{prefix}_MDTM_total.cube"
     write_cube(
-        tedm_path,
+        edtm_path,
         cube,
-        tedm_total,
-        f"TEDM density from {args.log.name}; state={args.state}; mode={args.density_mode}",
+        edtm_total,
+        f"EDTM density from {args.log.name}; state={args.state}; mode={args.density_mode}",
         f"Direct canonical-WFX primitive evaluation; steps={dx:g},{dy:g},{dz:g} bohr",
     )
     write_cube(
-        tmdm_path,
+        mdtm_path,
         cube,
-        tmdm_total,
-        f"TMDM density from {args.log.name}; state={args.state}; mode={args.density_mode}",
+        mdtm_total,
+        f"MDTM density from {args.log.name}; state={args.state}; mode={args.density_mode}",
         f"Direct canonical-WFX primitive evaluation; steps={dx:g},{dy:g},{dz:g} bohr",
     )
 
     if args.keep_components:
-        for label, grids in (("TEDM", tedm_components), ("TMDM", tmdm_components)):
+        for label, grids in (("EDTM", edtm_components), ("MDTM", mdtm_components)):
             for component, grid in zip(("x", "y", "z"), grids):
                 write_cube(
                     args.outdir / f"{prefix}_{label}_{component}.cube",
@@ -353,8 +353,8 @@ def generate_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
                 f"all_printed_reverse={len(all_reverse)}",
                 f"retained_2sumc2={retained_two_sum_c_squared}",
                 f"all_printed_2sumc2={diagnostics.two_sum_c_squared}",
-                f"validation_tedm_factor={args.validation_tedm_factor}",
-                f"validation_tmdm_factor={args.validation_tmdm_factor}",
+                f"validation_edtm_factor={args.validation_edtm_factor}",
+                f"validation_mdtm_factor={args.validation_mdtm_factor}",
                 "mo_source=restricted_canonical_scf_wfx_with_virtuals",
                 "checkpoint_dependency=none",
                 "mo_cube_dependency=none",
@@ -363,15 +363,15 @@ def generate_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
         + "\n",
         encoding="utf-8",
     )
-    eprint(f"[Done] TEDM: {tedm_path}")
-    eprint(f"[Done] TMDM: {tmdm_path}")
-    return tedm_path, tmdm_path
+    eprint(f"[Done] EDTM: {edtm_path}")
+    eprint(f"[Done] MDTM: {mdtm_path}")
+    return edtm_path, mdtm_path
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Generate ChiroptMap-compatible TEDM/TMDM cubes directly from a Gaussian TD/TDA log "
+            "Generate ChiroptMap-compatible EDTM/MDTM cubes directly from a Gaussian TD/TDA log "
             "and a matching canonical ground-state SCF WFX containing virtual orbitals."
         )
     )
@@ -395,7 +395,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--response-convention",
         choices=["forward-only", "xplus_yminus"],
         default="forward-only",
-        help="Use Gaussian X only, or validation convention TEDM=X+Y and TMDM=X-Y.",
+        help="Use Gaussian X only, or validation convention EDTM=X+Y and MDTM=X-Y.",
     )
     parser.add_argument("--spacing", type=float, default=0.20, help="Grid spacing in Bohr")
     parser.add_argument("--padding", type=float, default=6.0, help="Molecular padding in Bohr")
@@ -423,12 +423,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Do not write the state-resolved CPL summary and g_CPL CSV.",
     )
     parser.add_argument("--keep-components", action="store_true")
-    parser.add_argument("--phase-align", choices=["none", "tedm"], default="none")
+    parser.add_argument(
+        "--phase-align",
+        choices=["none", "edtm"],
+        default="none",
+        help="Align the global excited-state phase to the integrated EDTM.",
+    )
     parser.add_argument("--strict-ci", action="store_true")
     parser.add_argument("--skip-validation-report", action="store_true")
     parser.add_argument("--skip-geometry-check", action="store_true")
-    parser.add_argument("--validation-tedm-factor", type=float, default=-2.0)
-    parser.add_argument("--validation-tmdm-factor", type=float, default=-1.0)
+    parser.add_argument("--validation-edtm-factor", type=float, default=-2.0)
+    parser.add_argument("--validation-mdtm-factor", type=float, default=-1.0)
     return parser
 
 

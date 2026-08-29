@@ -6,7 +6,7 @@ ChiroptMap connects an excited-state calculation to two complementary results:
 
 1. a state table containing transition moments, `g_CPL`, excitation energy,
    wavelength, oscillator strength, and a radiative-rate estimate; and
-2. real-space TEDM/TMDM cube files showing where the electric and magnetic
+2. real-space EDTM/MDTM cube files showing where the electric and magnetic
    transition-moment contributions are located.
 
 The summary table is derived from the quantum-chemistry program's printed
@@ -89,7 +89,7 @@ chiroptmap-gaussian-wfx \
   --wfx job_canonical_allmo.wfx \
   --state 1 \
   --density-mode validation \
-  --phase-align tedm \
+  --phase-align edtm \
   --strict-ci \
   --outdir chiroptmap_S1 \
   --keep-components
@@ -119,7 +119,7 @@ For Gaussian, `--strict-ci` requires `IOp(9/40=4)` or another validated
 sufficient setting and checks the closed-shell diagnostic
 `2*sum(c^2) >= 0.98`. This is a practical warning, not proof of cube
 convergence. In the molecule1 scan, n=3 already gave `2*sum(c^2)=0.99760` but
-still differed from n=4 by 29% (TEDM) and 41% (TMDM) in relative L2. The n=5
+still differed from n=4 by 29% (EDTM) and 41% (MDTM) in relative L2. The n=5
 output was exactly the same as n=4 and did not add `1e-5` amplitudes.
 
 ## 6. CPL CSV without maps
@@ -135,8 +135,8 @@ the path explicitly, use `--cpl-csv-path path/to/table.csv`.
 
 ## 7. Output interpretation
 
-`*_TEDM_total.cube` is the component-density vector projected onto the unit
-electric transition-moment vector. `*_TMDM_total.cube` is projected onto the
+`*_EDTM_total.cube` is the component-density vector projected onto the unit
+electric transition-moment vector. `*_MDTM_total.cube` is projected onto the
 unit magnetic transition-moment vector. Positive and negative isosurfaces show
 signed contributions along the selected transition-moment direction.
 
@@ -173,6 +173,6 @@ dimensionless `g_CPL`, not an electron-spin g tensor.
 `Could not find ... spectrum`
 : Confirm that the final output contains length-gauge absorption and CD tables.
 
-Large legacy TMDM differences
+Large legacy MDTM differences
 : The older MO-cube route uses finite-difference orbital gradients. Prefer the
   direct analytical-gradient workflow for quantitative validation.

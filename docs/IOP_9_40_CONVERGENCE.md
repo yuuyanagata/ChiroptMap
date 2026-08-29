@@ -11,7 +11,7 @@ TDA=(NStates=6) B3LYP/6-311G(2d,p) EmpiricalDispersion=GD3BJ
 Geom=AllCheck Guess=Read
 ```
 
-All jobs used 16 CPU cores and terminated normally. S1 TEDM/TMDM cubes were
+All jobs used 16 CPU cores and terminated normally. S1 EDTM/MDTM cubes were
 then evaluated directly from the same canonical all-MO WFX on the same cube
 grid. The primary comparison used every amplitude printed at each IOp level.
 
@@ -33,16 +33,16 @@ Gaussian 16 calculation, requesting n=5 did not print amplitudes down to
 
 | n | Map | Cosine | Norm ratio | Relative L2 | Shape-only L2 |
 |---:|---|---:|---:|---:|---:|
-| 1 | TEDM | 0.9286949464 | 1.38417312 | 0.58735515 | 0.37763753 |
-| 1 | TMDM | 0.8110118992 | 1.10311577 | 0.65389936 | 0.61479769 |
-| 2 | TEDM | 0.9366824638 | 1.22322934 | 0.45247660 | 0.35585822 |
-| 2 | TMDM | 0.8276582405 | 1.04038518 | 0.60019546 | 0.58709754 |
-| 3 | TEDM | 0.9681370016 | 1.11389846 | 0.28975360 | 0.25244009 |
-| 3 | TMDM | 0.9148716123 | 0.95085777 | 0.40534545 | 0.41262183 |
-| 4 | TEDM | 1.0000000000 | 1.00000000 | 0 | 0 |
-| 4 | TMDM | 1.0000000000 | 1.00000000 | 0 | 0 |
-| 5 | TEDM | 1.0000000000 | 1.00000000 | 0 | 0 |
-| 5 | TMDM | 1.0000000000 | 1.00000000 | 0 | 0 |
+| 1 | EDTM | 0.9286949464 | 1.38417312 | 0.58735515 | 0.37763753 |
+| 1 | MDTM | 0.8110118992 | 1.10311577 | 0.65389936 | 0.61479769 |
+| 2 | EDTM | 0.9366824638 | 1.22322934 | 0.45247660 | 0.35585822 |
+| 2 | MDTM | 0.8276582405 | 1.04038518 | 0.60019546 | 0.58709754 |
+| 3 | EDTM | 0.9681370016 | 1.11389846 | 0.28975360 | 0.25244009 |
+| 3 | MDTM | 0.9148716123 | 0.95085777 | 0.40534545 | 0.41262183 |
+| 4 | EDTM | 1.0000000000 | 1.00000000 | 0 | 0 |
+| 4 | MDTM | 1.0000000000 | 1.00000000 | 0 | 0 |
+| 5 | EDTM | 1.0000000000 | 1.00000000 | 0 | 0 |
+| 5 | MDTM | 1.0000000000 | 1.00000000 | 0 | 0 |
 
 The n=4 and n=5 numerical cube arrays were element-wise identical. Applying a
 common ChiroptMap cutoff of `|c| >= 1e-4` also gave zero difference.
@@ -56,11 +56,11 @@ the underlying excited-state solution or the transition-moment table.
 
 ## Interpretation
 
-- n=1, n=2, and n=3 are unsuitable for quantitative TEDM/TMDM maps in this
+- n=1, n=2, and n=3 are unsuitable for quantitative EDTM/MDTM maps in this
   case.
 - A coefficient-norm heuristic alone is insufficient. At n=3,
-  `2*sum(c^2)=0.99760`, yet relative cube errors remained 29% for TEDM and 41%
-  for TMDM.
+  `2*sum(c^2)=0.99760`, yet relative cube errors remained 29% for EDTM and 41%
+  for MDTM.
 - `IOp(9/40=4)` is the recommended Gaussian setting for ChiroptMap.
 - n=5 provided no benefit over n=4 in this validated Gaussian 16 case.
 - Other methods, basis sets, and molecules should retain n=4 as the default

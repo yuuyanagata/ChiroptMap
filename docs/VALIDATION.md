@@ -18,7 +18,7 @@ analytical primitive gradients, and the exact Gaussian reference grids.
 
 ## Excited-state quantities
 
-| Molecule | ORCA S1 (eV) | Gaussian S1 (eV) | Difference (eV) | TEDM vector cosine | TMDM vector cosine |
+| Molecule | ORCA S1 (eV) | Gaussian S1 (eV) | Difference (eV) | EDTM vector cosine | MDTM vector cosine |
 |---:|---:|---:|---:|---:|---:|
 | 1 | 2.248318 | 2.248200 | +0.000118 | 0.99999995 | 0.99999660 |
 | 2 | 2.488751 | 2.488700 | +0.000051 | 1.00000000 | 0.99999909 |
@@ -51,28 +51,28 @@ Global excited-state phase was aligned before pointwise metrics were evaluated.
 
 | Mol. | Map | Cosine | ORCA/Gaussian norm | Relative L2 |
 |---:|---|---:|---:|---:|
-| 1 | TEDM | 0.9999135603 | 0.99750129 | 0.0133675 |
-| 1 | TMDM | 0.9997530851 | 1.00621004 | 0.0231400 |
-| 2 | TEDM | 0.9998945953 | 0.99786003 | 0.0146608 |
-| 2 | TMDM | 0.9998723429 | 1.00378727 | 0.0164507 |
-| 3 | TEDM | 0.9999526786 | 0.99838643 | 0.0098536 |
-| 3 | TMDM | 0.9998395046 | 1.00584282 | 0.0188946 |
-| 4 | TEDM | 0.9999781687 | 0.99850746 | 0.0067694 |
-| 4 | TMDM | 0.9999058241 | 1.00395495 | 0.0143087 |
-| 5 | TEDM | 0.9999654609 | 0.99891674 | 0.0083772 |
-| 5 | TMDM | 0.9998893096 | 1.00554638 | 0.0159176 |
+| 1 | EDTM | 0.9999135603 | 0.99750129 | 0.0133675 |
+| 1 | MDTM | 0.9997530851 | 1.00621004 | 0.0231400 |
+| 2 | EDTM | 0.9998945953 | 0.99786003 | 0.0146608 |
+| 2 | MDTM | 0.9998723429 | 1.00378727 | 0.0164507 |
+| 3 | EDTM | 0.9999526786 | 0.99838643 | 0.0098536 |
+| 3 | MDTM | 0.9998395046 | 1.00584282 | 0.0188946 |
+| 4 | EDTM | 0.9999781687 | 0.99850746 | 0.0067694 |
+| 4 | MDTM | 0.9999058241 | 1.00395495 | 0.0143087 |
+| 5 | EDTM | 0.9999654609 | 0.99891674 | 0.0083772 |
+| 5 | MDTM | 0.9998893096 | 1.00554638 | 0.0159176 |
 
-Mean relative L2 errors were 1.061% for TEDM and 1.774% for TMDM. All cube
+Mean relative L2 errors were 1.061% for EDTM and 1.774% for MDTM. All cube
 cosines exceeded 0.99975.
 
 ## Comparison with the legacy fchk/MO-cube workflow
 
-TEDM remained close to the legacy results (0.677-1.466% relative L2). Legacy
-TMDM differences were 11.7-32.0% relative L2, with the largest relative value
+EDTM remained close to the legacy results (0.677-1.466% relative L2). Legacy
+MDTM differences were 11.7-32.0% relative L2, with the largest relative value
 for molecule 2, whose magnetic moment is small. The same ORCA maps agreed with
-Gaussian direct-WFX TMDM maps within 1.43-2.31%. This identifies finite-difference
+Gaussian direct-WFX MDTM maps within 1.43-2.31%. This identifies finite-difference
 MO-cube gradients in the legacy path, rather than a failure of the ORCA bridge,
-as the principal source of the larger legacy TMDM difference.
+as the principal source of the larger legacy MDTM difference.
 
 ## Bridge diagnostics
 

@@ -1,4 +1,4 @@
-"""Direct TEDM/TMDM cube generation from ORCA JSON plus occupied WFX."""
+"""Direct EDTM/MDTM cube generation from ORCA JSON plus occupied WFX."""
 
 from __future__ import annotations
 
@@ -100,11 +100,11 @@ def generate_orca_json_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
         raise ValueError(f"ORCA output does not contain transition moments for state {args.state}.")
     _energy_ev, _wavelength, _oscillator, ex, ey, ez = electric_rows[args.state]
     _rotatory_strength, mx, my, mz = magnetic_rows[args.state]
-    orca_tedm = (ex, ey, ez)
+    orca_edtm = (ex, ey, ez)
     # ORCA's length-gauge CD table uses R = mu dot (2*m) for the tabulated
-    # magnetic components.  ChiroptMap's Gaussian-compatible TMDM convention is
+    # magnetic components.  ChiroptMap's Gaussian-compatible MDTM convention is
     # therefore compared against twice the printed ORCA vector.
-    orca_tmdm = (2.0 * mx, 2.0 * my, 2.0 * mz)
+    orca_mdtm = (2.0 * mx, 2.0 * my, 2.0 * mz)
 
     all_index = {mo: index for index, mo in enumerate(all_mos)}
     occupied_columns = np.asarray([all_index[mo] for mo in occupied_mos], dtype=np.int64)
@@ -115,8 +115,8 @@ def generate_orca_json_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
     x, y, z = coordinate_1d_aligned_bohr(cube)
     grid_shape = (cube.nx, cube.ny, cube.nz)
     dx, dy, dz = cube_step_sizes_bohr(cube)
-    tedm_components = tuple(np.zeros(grid_shape, dtype=dtype) for _ in range(3))
-    tmdm_components = tuple(np.zeros(grid_shape, dtype=dtype) for _ in range(3))
+    edtm_components = tuple(np.zeros(grid_shape, dtype=dtype) for _ in range(3))
+    mdtm_components = tuple(np.zeros(grid_shape, dtype=dtype) for _ in range(3))
 
     eprint(
         f"[ORCA bridge] AOs/MOs={bridge.diagnostics.n_mos} "
@@ -151,7 +151,7 @@ def generate_orca_json_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
         tau = np.einsum("ij,ij->i", phi_occ @ electric_weights, phi_virt, optimize=True)
         block_shape = (x1 - x0, cube.ny, cube.nz)
         for component, coordinate in enumerate((points[:, 0], points[:, 1], points[:, 2])):
-            tedm_components[component][x0:x1] = (coordinate * tau).reshape(block_shape)
+            edtm_components[component][x0:x1] = (coordinate * tau).reshape(block_shape)
 
         coordinate_columns = (points[:, 0, None], points[:, 1, None], points[:, 2, None])
         a_occ = (
@@ -172,17 +172,17 @@ def generate_orca_json_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
             term2 = np.einsum(
                 "ij,ij->i", phi_occ_weighted, a_virt[component], optimize=True
             )
-            tmdm_components[component][x0:x1] = (term1 - term2).reshape(block_shape)
+            mdtm_components[component][x0:x1] = (term1 - term2).reshape(block_shape)
         eprint(f"[Grid] completed x slices {x1}/{cube.nx}")
 
     volume = cube_voxel_volume_bohr3(cube)
-    integrated_tedm = np.asarray(
-        [float(np.sum(grid, dtype=np.float64) * volume) for grid in tedm_components]
+    integrated_edtm = np.asarray(
+        [float(np.sum(grid, dtype=np.float64) * volume) for grid in edtm_components]
     )
-    if float(np.dot(integrated_tedm, np.asarray(orca_tedm))) < 0.0:
-        for grid in tedm_components + tmdm_components:
+    if float(np.dot(integrated_edtm, np.asarray(orca_edtm))) < 0.0:
+        for grid in edtm_components + mdtm_components:
             grid *= -1.0
-        eprint("[Phase] Multiplied all densities by -1 to align with the ORCA TEDM.")
+        eprint("[Phase] Multiplied all densities by -1 to align with the ORCA EDTM.")
 
     args.outdir.mkdir(parents=True, exist_ok=True)
     prefix = args.outprefix or f"{args.json.stem}_S{args.state}"
@@ -190,38 +190,38 @@ def generate_orca_json_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
         cpl_path = args.cpl_csv_path or (args.outdir / f"{args.output.stem}-CPL.csv")
         write_cpl_csv(cpl_path, args.output, build_cpl_rows(output_text))
         eprint(f"[CPL] {cpl_path}")
-    validation_rows = compare_component_integrals(cube, "TEDM", tedm_components, orca_tedm)
-    validation_rows += compare_component_integrals(cube, "TMDM", tmdm_components, orca_tmdm)
+    validation_rows = compare_component_integrals(cube, "EDTM", edtm_components, orca_edtm)
+    validation_rows += compare_component_integrals(cube, "MDTM", mdtm_components, orca_mdtm)
     validation_path = args.outdir / f"{prefix}_moment_validation.csv"
     write_validation_csv(validation_path, validation_rows)
 
-    tedm_norm = float(np.linalg.norm(np.asarray(orca_tedm)))
-    tmdm_norm = float(np.linalg.norm(np.asarray(orca_tmdm)))
-    if tedm_norm == 0.0 or tmdm_norm == 0.0:
-        raise ValueError("The selected ORCA state has a zero TEDM or TMDM norm.")
-    tedm_unit = np.asarray(orca_tedm) / tedm_norm
-    tmdm_unit = np.asarray(orca_tmdm) / tmdm_norm
-    tedm_total = sum(tedm_unit[index] * tedm_components[index] for index in range(3))
-    tmdm_total = sum(tmdm_unit[index] * tmdm_components[index] for index in range(3))
+    edtm_norm = float(np.linalg.norm(np.asarray(orca_edtm)))
+    mdtm_norm = float(np.linalg.norm(np.asarray(orca_mdtm)))
+    if edtm_norm == 0.0 or mdtm_norm == 0.0:
+        raise ValueError("The selected ORCA state has a zero EDTM or MDTM norm.")
+    edtm_unit = np.asarray(orca_edtm) / edtm_norm
+    mdtm_unit = np.asarray(orca_mdtm) / mdtm_norm
+    edtm_total = sum(edtm_unit[index] * edtm_components[index] for index in range(3))
+    mdtm_total = sum(mdtm_unit[index] * mdtm_components[index] for index in range(3))
 
-    tedm_path = args.outdir / f"{prefix}_TEDM_total.cube"
-    tmdm_path = args.outdir / f"{prefix}_TMDM_total.cube"
+    edtm_path = args.outdir / f"{prefix}_EDTM_total.cube"
+    mdtm_path = args.outdir / f"{prefix}_MDTM_total.cube"
     write_cube(
-        tedm_path,
+        edtm_path,
         cube,
-        tedm_total,
-        f"ORCA TEDM density from {args.json.name}; state={args.state}",
+        edtm_total,
+        f"ORCA EDTM density from {args.json.name}; state={args.state}",
         f"Direct JSON/WFX primitive evaluation; threshold={args.min_abs_coeff:g}",
     )
     write_cube(
-        tmdm_path,
+        mdtm_path,
         cube,
-        tmdm_total,
-        f"ORCA TMDM density from {args.json.name}; state={args.state}",
+        mdtm_total,
+        f"ORCA MDTM density from {args.json.name}; state={args.state}",
         f"Direct JSON/WFX primitive evaluation; threshold={args.min_abs_coeff:g}",
     )
     if args.keep_components:
-        for label, grids in (("TEDM", tedm_components), ("TMDM", tmdm_components)):
+        for label, grids in (("EDTM", edtm_components), ("MDTM", mdtm_components)):
             for component, grid in zip(("x", "y", "z"), grids):
                 write_cube(
                     args.outdir / f"{prefix}_{label}_{component}.cube",
@@ -257,14 +257,14 @@ def generate_orca_json_cubes(args: argparse.Namespace) -> Tuple[Path, Path]:
         encoding="utf-8",
     )
     eprint(f"[Validation] {validation_path}")
-    eprint(f"[Done] TEDM: {tedm_path}")
-    eprint(f"[Done] TMDM: {tmdm_path}")
-    return tedm_path, tmdm_path
+    eprint(f"[Done] EDTM: {edtm_path}")
+    eprint(f"[Done] MDTM: {mdtm_path}")
+    return edtm_path, mdtm_path
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Generate TEDM/TMDM cubes directly from ORCA JSON and occupied WFX."
+        description="Generate EDTM/MDTM cubes directly from ORCA JSON and occupied WFX."
     )
     parser.add_argument("--json", required=True, type=Path)
     parser.add_argument("--wfx", required=True, type=Path)

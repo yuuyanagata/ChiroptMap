@@ -7,7 +7,7 @@ chiroptmap-gaussian-wfx \
   --state 1 \
   --density-mode validation \
   --min-abs-coeff 1e-4 \
-  --phase-align tedm \
+  --phase-align edtm \
   --strict-ci \
   --outdir results/gaussian_S1 \
   --keep-components

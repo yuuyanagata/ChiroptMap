@@ -1,3 +1,4 @@
+import csv
 from dataclasses import replace
 import math
 from pathlib import Path
@@ -137,7 +138,7 @@ def test_rejects_post_scf_natural_orbitals(tmp_path):
         raise AssertionError("A post-SCF natural-orbital WFX was not rejected.")
 
 
-def test_cli_generates_tedm_and_tmdm_cubes_without_mo_cubes(tmp_path):
+def test_cli_generates_edtm_and_mdtm_cubes_without_mo_cubes(tmp_path):
     wfx_path = tmp_path / "canonical.wfx"
     log_path = tmp_path / "tda.out"
     outdir = tmp_path / "cubes"
@@ -166,17 +167,28 @@ def test_cli_generates_tedm_and_tmdm_cubes_without_mo_cubes(tmp_path):
         ]
     )
 
-    tedm_path = outdir / "tda_S1_contribution_map_TEDM_total.cube"
-    tmdm_path = outdir / "tda_S1_contribution_map_TMDM_total.cube"
-    assert tedm_path.is_file()
-    assert tmdm_path.is_file()
-    tedm = read_cube(tedm_path, np.float64)
-    tmdm = read_cube(tmdm_path, np.float64)
-    assert tedm.data.shape == (3, 3, 3)
-    assert tmdm.data.shape == (3, 3, 3)
-    assert np.isfinite(tedm.data).all()
-    assert np.isfinite(tmdm.data).all()
-    assert np.max(np.abs(tedm.data)) > 0.0
+    edtm_path = outdir / "tda_S1_contribution_map_EDTM_total.cube"
+    mdtm_path = outdir / "tda_S1_contribution_map_MDTM_total.cube"
+    assert edtm_path.is_file()
+    assert mdtm_path.is_file()
+    edtm = read_cube(edtm_path, np.float64)
+    mdtm = read_cube(mdtm_path, np.float64)
+    assert edtm.data.shape == (3, 3, 3)
+    assert mdtm.data.shape == (3, 3, 3)
+    assert np.isfinite(edtm.data).all()
+    assert np.isfinite(mdtm.data).all()
+    assert np.max(np.abs(edtm.data)) > 0.0
+
+    validation_path = outdir / "tda_S1_contribution_map_moment_validation.csv"
+    with validation_path.open(encoding="utf-8", newline="") as handle:
+        quantities = {row["quantity"] for row in csv.DictReader(handle)}
+    assert quantities == {"EDTM", "MDTM"}
+
+    settings = (outdir / "tda_S1_contribution_map_settings.txt").read_text(
+        encoding="utf-8"
+    )
+    assert "validation_edtm_factor=-2.0" in settings
+    assert "validation_mdtm_factor=-1.0" in settings
 
     comparison_outdir = tmp_path / "reference_grid_cubes"
     main(
@@ -190,7 +202,7 @@ def test_cli_generates_tedm_and_tmdm_cubes_without_mo_cubes(tmp_path):
             "--outdir",
             str(comparison_outdir),
             "--reference-cube",
-            str(tedm_path),
+            str(edtm_path),
             "--density-mode",
             "validation",
             "--response-convention",
@@ -205,8 +217,8 @@ def test_cli_generates_tedm_and_tmdm_cubes_without_mo_cubes(tmp_path):
         ]
     )
     reference_result = read_cube(
-        comparison_outdir / "tda_S1_validation_TEDM_total.cube", np.float64
+        comparison_outdir / "tda_S1_validation_EDTM_total.cube", np.float64
     )
-    assert reference_result.data.shape == tedm.data.shape
-    assert np.allclose(reference_result.origin_bohr, tedm.origin_bohr)
-    assert np.allclose(reference_result.vx_bohr, tedm.vx_bohr)
+    assert reference_result.data.shape == edtm.data.shape
+    assert np.allclose(reference_result.origin_bohr, edtm.origin_bohr)
+    assert np.allclose(reference_result.vx_bohr, edtm.vx_bohr)

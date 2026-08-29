@@ -1,9 +1,25 @@
+import csv
 import json
 from pathlib import Path
 
 import numpy as np
 
+from chiroptmap.cubeio import read_cube
 from chiroptmap.orca_json import read_orca_json_wavefunction
+from chiroptmap.orca_json_cubes import main as generate_orca_cubes
+
+
+ORCA_TRANSITION_TABLES = """
+ABSORPTION SPECTRUM VIA TRANSITION ELECTRIC DIPOLE MOMENTS
+--------------------------------------------------------------------------------
+  0-1 A ->  1-1 A  3.000000  24196.6  413.3  0.100000  1.00000  1.00000  0.20000  0.10000
+ABSORPTION SPECTRUM VIA TRANSITION VELOCITY DIPOLE MOMENTS
+
+CD SPECTRUM VIA TRANSITION ELECTRIC DIPOLE MOMENTS
+--------------------------------------------------------------------------------
+  0-1 A ->  1-1 A  3.000000  24196.6  413.3  1.00000  0.10000  0.20000  0.30000
+CD SPECTRUM VIA TRANSITION VELOCITY DIPOLE MOMENTS
+"""
 
 
 def _write_occupied_wfx(path: Path, coefficients: np.ndarray) -> None:
@@ -145,3 +161,51 @@ def test_orca_json_wfx_bridge_recovers_shell_local_transforms(tmp_path):
     assert bridge.roots[0].occupied_mos == (1, 2, 3)
     assert bridge.roots[0].virtual_mos == (4,)
     np.testing.assert_allclose(bridge.roots[0].x_amplitudes[:, 0], [0.11, -0.22, 0.33])
+
+    output_path = tmp_path / "orca.out"
+    output_path.write_text(ORCA_TRANSITION_TABLES, encoding="utf-8")
+    outdir = tmp_path / "cubes"
+    generate_orca_cubes(
+        [
+            "--output",
+            str(output_path),
+            "--json",
+            str(json_path),
+            "--wfx",
+            str(wfx_path),
+            "--state",
+            "1",
+            "--outdir",
+            str(outdir),
+            "--spacing",
+            "1.0",
+            "--padding",
+            "1.0",
+            "--x-block",
+            "1",
+            "--primitive-chunk",
+            "1",
+            "--keep-components",
+            "--no-cpl-csv",
+        ]
+    )
+
+    edtm_path = outdir / "wavefunction_S1_EDTM_total.cube"
+    mdtm_path = outdir / "wavefunction_S1_MDTM_total.cube"
+    edtm = read_cube(edtm_path, np.float64)
+    mdtm = read_cube(mdtm_path, np.float64)
+    assert edtm.data.shape == (3, 3, 3)
+    assert mdtm.data.shape == (3, 3, 3)
+    assert np.isfinite(edtm.data).all()
+    assert np.isfinite(mdtm.data).all()
+    assert np.max(np.abs(edtm.data)) > 0.0
+    assert np.max(np.abs(mdtm.data)) > 0.0
+    for quantity in ("EDTM", "MDTM"):
+        for component in ("x", "y", "z"):
+            assert (outdir / f"wavefunction_S1_{quantity}_{component}.cube").is_file()
+
+    with (outdir / "wavefunction_S1_moment_validation.csv").open(
+        encoding="utf-8", newline=""
+    ) as handle:
+        quantities = {row["quantity"] for row in csv.DictReader(handle)}
+    assert quantities == {"EDTM", "MDTM"}
