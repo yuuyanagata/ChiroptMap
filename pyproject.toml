@@ -4,13 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chiroptmap"
-version = "0.1.0"
+version = "0.1.1"
 description = "Checkpoint-free Gaussian and ORCA transition-moment-density maps for chiroptical analysis"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [
-  { name = "ChiroptMap contributors" }
+  { name = "Yuuya Nagata" },
+  { name = "Takashi Hirose" }
 ]
 keywords = [
   "circularly polarized luminescence",

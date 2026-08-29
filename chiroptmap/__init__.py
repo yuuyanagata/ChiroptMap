@@ -5,7 +5,7 @@ and Gaussian/ORCA output conventions. It is not a MATLAB port, wrapper, or
 line-by-line translation.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 IMPLEMENTATION_NOTE = (
     "Independent Python implementation for CPL-oriented Gaussian/ORCA "

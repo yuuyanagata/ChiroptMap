@@ -9,6 +9,20 @@ summary tables, including the dissymmetry factor `g_CPL`.
 The direct workflows do not require Gaussian checkpoint files and do not create
 intermediate molecular-orbital cube files.
 
+## Terminology
+
+The manuscript and the command-line interface use different word orders for
+the same two scalar transition-moment-density maps:
+
+| Quantity | Manuscript label | CLI/output label | Relationship |
+|---|---|---|---|
+| Electric-dipole transition-moment density | EDTM | TEDM | Identical map and units |
+| Magnetic-dipole transition-moment density | MDTM | TMDM | Identical map and units |
+
+Thus, for example, an `*_TEDM_total.cube` file contains the EDTM map discussed
+in the manuscript; the label difference does not indicate a different
+calculation.
+
 ## Highlights
 
 - Gaussian TD-DFT/TDA output plus a canonical all-MO WFX file.
