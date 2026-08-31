@@ -1,5 +1,9 @@
 # Examples
 
+- `molecule1_gaussian_example.zip`: production molecule1 Gaussian TDA and
+  canonical-WFX-job inputs/outputs plus S1 total EDTM/MDTM cubes.
+- `molecule1_orca_example.zip`: production molecule1 ORCA input, coordinates,
+  output, and S1 total EDTM/MDTM cubes.
 - `orca_tda_chiroptmap.inp`: ORCA 6.1 closed-shell TDA template that requests
   JSON and AIM/WFX-compatible output.
 - `gaussian_tda_chiroptmap.gjf`: Gaussian TDA output template with
@@ -15,3 +19,8 @@ The quantum-chemistry input templates contain placeholder coordinates. Review
 charge, multiplicity, method, basis, resources, and file names before use.
 Keep `NoSymm` in both matching Gaussian jobs so their Cartesian frame is not
 reoriented by symmetry handling.
+
+The two molecule1 ZIP archives are compact result examples. Their internal
+READMEs identify the calculation level, file provenance, terminology-only
+cube-header normalization, and the large WFX/JSON intermediates required for
+map regeneration but intentionally omitted from these public archives.
