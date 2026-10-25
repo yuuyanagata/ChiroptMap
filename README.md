@@ -36,6 +36,14 @@ consistently.
 - A default excitation-amplitude cutoff of `1e-4`.
 - Optional legacy Gaussian checkpoint/MO-cube workflow retained for comparison.
 - NumPy-only runtime dependency.
+- Full-amplitude ORCA/TDA state-field integrals, C_b/C_R cancellation indices,
+  regional q contributions, explicit operator origins and analytic references.
+- Separate TDA NTO orbital cubes and explicit-target grid precision checks.
+
+The v0.3.0 analysis commands use all source amplitudes by default. The existing
+direct cube commands retain their `1e-4` cutoff default. See
+[state-field analysis and precision checks](docs/STATE_ANALYSIS.md) for the new
+workflow, conventions, input definitions and interpretation limits.
 
 ## Supported workflows
 
@@ -86,6 +94,10 @@ The installed commands are:
 chiroptmap                 CPL CSV and legacy Gaussian MO-cube workflow
 chiroptmap-gaussian-wfx    Direct Gaussian/WFX EDTM and MDTM cubes
 chiroptmap-orca            Direct ORCA JSON/WFX EDTM and MDTM cubes
+chiroptmap-state-fields    All-amplitude ORCA/TDA cancellation/origin analysis
+chiroptmap-analytic        All-space Cartesian-Gaussian reference integrals
+chiroptmap-maps            Selected linear moment maps and TDA NTO orbitals
+chiroptmap-check-convergence  Explicit-target comparison of two complete grids
 ```
 
 ## Quick start: ORCA

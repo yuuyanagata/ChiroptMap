@@ -20,6 +20,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Install package and test dependencies
-        run: python -m pip install -e ".[test]"
+        run: python -m pip install ".[test]"
       - name: Run tests
         run: python -m pytest -q
+      - name: Check installed analysis commands outside the source tree
+        working-directory: ${{ runner.temp }}
+        run: |
+          chiroptmap-state-fields --help
+          chiroptmap-analytic --help
+          chiroptmap-maps --help
+          chiroptmap-check-convergence --help

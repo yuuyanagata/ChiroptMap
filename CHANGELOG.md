@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+## 0.3.0 - 2026-10-25
+
+- Added installable ORCA/TDA state-field analysis with full-amplitude electric
+  and magnetic vector integrals, scalar cancellation indices C_b and C_R, and
+  additive regional q contributions.
+- Added independent all-space Cartesian-Gaussian reference integrals and exact
+  operator-origin translations, including ORCA's transition-property ElOri.
+- Added equal-radius Becke partitions with user-supplied atom regions and
+  optional explicit common-centre subsets. Whole-molecule analysis needs no
+  region definition.
+- Added bounded-grid evaluation through exact weighted virtual-orbital
+  contraction, separate TDA NTO orbital cubes, and streamed scalar map export.
+  Physical fields are not truncated to the displayed NTO pairs.
+- Added an explicit-target grid precision command that checks provenance,
+  matching boxes/origins/partitions, complete processing, relative vector errors
+  and the absolute C_R change. Completion alone does not certify precision.
+- Added synthetic analytic, origin, additivity, NTO, map and precision-gate
+  regression tests, plus installed-package command checks.
+- Retained the v0.2.0 direct Gaussian/ORCA cube algorithms and CLI defaults.
+
 ## 0.2.0 - 2026-08-29
 
 - Standardized direct Gaussian/ORCA output filenames, cube headers, validation

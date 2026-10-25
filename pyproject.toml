@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chiroptmap"
-version = "0.2.0"
+version = "0.3.0"
 description = "Checkpoint-free Gaussian and ORCA transition-moment-density maps for chiroptical analysis"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -50,6 +50,10 @@ Issues = "https://github.com/yuuyanagata/ChiroptMap/issues"
 chiroptmap = "chiroptmap.cli:main"
 chiroptmap-gaussian-wfx = "chiroptmap.wfx_cubes:main"
 chiroptmap-orca = "chiroptmap.orca_json_cubes:main"
+chiroptmap-state-fields = "chiroptmap.analysis.state_fields:cli"
+chiroptmap-analytic = "chiroptmap.analysis.analytic:main"
+chiroptmap-maps = "chiroptmap.analysis.maps:cli"
+chiroptmap-check-convergence = "chiroptmap.analysis.convergence:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
