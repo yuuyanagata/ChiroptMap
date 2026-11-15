@@ -4,6 +4,7 @@ title: "ChiroptMap: Gaussian and ORCA transition-moment-density mapping for chir
 version: "0.3.0"
 date-released: "2026-10-25"
 license: "MIT"
+doi: "10.5281/zenodo.23644576"
 authors:
   - family-names: "Nagata"
     given-names: "Yuuya"

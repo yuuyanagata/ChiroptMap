@@ -269,6 +269,19 @@ interpretation.
 - [Gaussian IOp(9/40) convergence](docs/IOP_9_40_CONVERGENCE.md)
 - [Density modes](docs/VALIDATION_AND_CONTRIBUTION_MAP_MODES.md)
 - [Implementation notes](docs/IMPLEMENTATION_NOTES.md)
+- [Research data, archived versions and manuscript reproduction](docs/RESEARCH_DATA.md)
+
+## Citation and research data
+
+The installable **v0.3.0 software** is archived at
+[doi:10.5281/zenodo.23644576](https://doi.org/10.5281/zenodo.23644576).
+The separate **research dataset** is available at
+[doi:10.5281/zenodo.23644802](https://doi.org/10.5281/zenodo.23644802).
+It accompanies the manuscript *ChiroptMap: Orbital-Cube-Free Transition-Moment
+Density Analysis with State-Resolved Cancellation Diagnostics* by
+Yuuya Nagata and Takashi Hirose. See the
+[reproduction guide](docs/RESEARCH_DATA.md) for frozen calculation code,
+grid definitions and the distinction between the dataset and this software.
 
 ## License
 
