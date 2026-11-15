@@ -273,8 +273,11 @@ interpretation.
 
 ## Citation and research data
 
-The installable **v0.3.0 software** is archived at
-[doi:10.5281/zenodo.23644576](https://doi.org/10.5281/zenodo.23644576).
+The DOI for the **v0.3.1 documentation/citation release** is
+[doi:10.5281/zenodo.24241780](https://doi.org/10.5281/zenodo.24241780).
+Its numerical algorithms are unchanged from v0.3.0. The independently preserved
+**v0.3.0 software** used for the manuscript's installable-method reference remains
+available at [doi:10.5281/zenodo.23644576](https://doi.org/10.5281/zenodo.23644576).
 The separate **research dataset** is available at
 [doi:10.5281/zenodo.23644802](https://doi.org/10.5281/zenodo.23644802).
 It accompanies the manuscript *ChiroptMap: Orbital-Cube-Free Transition-Moment

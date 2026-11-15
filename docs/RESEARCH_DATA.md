@@ -6,10 +6,11 @@ Hirose, uses two distinct public records:
 
 | Record | Identifier | Contents |
 | --- | --- | --- |
+| Documentation/citation release v0.3.1 | [10.5281/zenodo.24241780](https://doi.org/10.5281/zenodo.24241780) | Updated dataset/reproduction guidance and citation metadata; numerical algorithms unchanged from v0.3.0; MIT license |
 | Installable software v0.3.0 | [10.5281/zenodo.23644576](https://doi.org/10.5281/zenodo.23644576) | ChiroptMap software snapshot; MIT license |
 | Research dataset v1.0.0 | [10.5281/zenodo.23644802](https://doi.org/10.5281/zenodo.23644802) | Native quantum files, numerical results, parameters and frozen calculation implementations; CC BY 4.0 data with the original MIT licenses for code |
 
-The software release corresponds to the immutable
+The manuscript's v0.3.0 software reference corresponds to the immutable
 [`v0.3.0` tag](https://github.com/yuuyanagata/ChiroptMap/tree/v0.3.0), commit
 `cd8e6eb016cf2d2a8fd1bb959b5d5b7f1487df2d`. Documentation added subsequently
 to `main` does not change that release. The dataset preserves the production

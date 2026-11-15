@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 0.3.1 - 2026-11-15
+
+- Linked the research dataset, frozen reproduction commands and numerical
+  precision/interpretation notes from the README and a dedicated guide.
+- Added the software DOI to the citation metadata, retaining Yuuya Nagata and
+  Takashi Hirose as the two authors.
+- Synchronized version metadata for the documentation/citation release.
+  Numerical algorithms and command-line defaults are unchanged from v0.3.0.
+- Preserved the immutable v0.3.0 software archive and the separate research
+  dataset; their identifiers remain valid for the calculations as performed.
+
 ## 0.3.0 - 2026-10-25
 
 - Added installable ORCA/TDA state-field analysis with full-amplitude electric
